@@ -1,0 +1,35 @@
+{
+  "name": "hosts-etc-cli",
+  "version": "1.0.0",
+  "description": "a cli for the hosts-etc package",
+  "main": "requireMe.js",
+  "bin": {
+    "hosts": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheBrenny/hosts-etc-cli.git"
+  },
+  "keywords": [
+    "hosts",
+    "hostfile",
+    "/etc/hosts",
+    "etc",
+    "hostman",
+    "hostile",
+    "cli"
+  ],
+  "author": "TheBrenny <iam@justbrenny.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheBrenny/hosts-etc-cli/issues"
+  },
+  "homepage": "https://github.com/TheBrenny/hosts-etc-cli#readme",
+  "dependencies": {
+    "big-kahuna": "^1.3.0",
+    "sudo-prompt": "^9.2.1"
+  }
+}
