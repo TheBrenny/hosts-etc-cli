@@ -2,8 +2,9 @@
 
 const bossman = require('big-kahuna').dashCare(true);
 const hosts = require('hosts-etc');
+const sudo = require('sudo-prompt');
 
-function cli() {
+async function cli() {
     if (bossman.has("-h", "--help")) {
         help();
         return 0;
@@ -15,24 +16,53 @@ function cli() {
     }
 
     if (bossman.has("-s", "--set")) {
+        let a = 0;
         try {
-            set(bossman.must.answerAmount([2, 4], "-s", "--set"));
-            console.log("Host successfully added.");
-            return 0;
+            let host = bossman.must.answerAmount([2, 4], "-s", "--set");
+            host = {
+                address: host[0],
+                host: host[1],
+                region: host[2] || "",
+                comment: host[3] || ""
+            };
+            a = set(host);
+            console.log(`${a} host${(a === 1 ? "" : "s")} set.`);
         } catch (e) {
-            console.error(e);
-            return e.code;
+            let winning = false;
+            let out = "";
+            if (e.code === "EPERM" && !process.env.SUDO_TRIED) {
+                out = await (sudoHosts().then((d) => {
+                    winning = true;
+                    return d;
+                }).catch((err) => console.error(err)));
+            }
+            if (!winning) {
+                console.error(e);
+                return e.code;
+            } else console.log(out);
         }
+        return 0;
     }
 
     if (bossman.has("-r", "--remove")) {
         try {
             let a = remove(bossman.must.answer("-r", "--remove"));
-            console.log(`${a} host${(a > 1 ? "s" : "")} successfully removed.`);
+            console.log(`${a} host${(a === 1 ? "" : "s")} removed.`);
         } catch (e) {
-            console.error(e);
-            return e.code;
+            let winning = false;
+            let out = "";
+            if (e.code === "EPERM" && !process.env.SUDO_TRIED) {
+                out = await (sudoHosts().then((d) => {
+                    winning = true;
+                    return d;
+                }).catch((err) => console.error(err)));
+            }
+            if (!winning) {
+                console.error(e);
+                return e.code;
+            } else console.log(out);
         }
+        return 0;
     }
 
     if (bossman.has("-g", "--get")) {
@@ -52,7 +82,7 @@ function cli() {
     return 1;
 }
 
-process.exit(cli());
+cli().then(code => process.exit(code));
 
 function help() {
     let msg = [
@@ -74,6 +104,14 @@ function help() {
         "            The result will be a list of all regions with their matching hosts.",
         "            The output type of the result can be specified using '-o' or",
         "            '--output'.",
+        // "", // I don't think we actually need an add bc we can "set" hosts?
+        // "    - hosts -a <address> <host> [region] [comment]",
+        // "    - hosts --add <address> <host> [region] [comment]",
+        // "            Adds a host to your system's hostfile. [region] and [comment] are",
+        // "            optional. To specify a comment and no region, set [region] to \"_\".",
+        // "            This will run the NPM package 'hosts-etc' using the NPM package",
+        // "            'sudo-prompt'. The output will be a number identifying how many new",
+        // "            were successfully added.",
         "",
         "    - hosts -s <address> <host> [region] [comment]",
         "    - hosts --set <address> <host> [region] [comment]",
@@ -119,7 +157,11 @@ function get(query) {
 }
 
 function set(hostData) {
+    return hosts.set(hostData);
+}
 
+function remove(query) {
+    return hosts.remove(query);
 }
 
 function output(output, type) {
@@ -170,4 +212,18 @@ function csvHost(host) {
 function tabbedHost(host) {
     let t = " ".repeat(15 - host.address.length); // 15 is max ip length
     return host.address + t + " <- " + host.host + (host.comment.length ? "  (" + host.comment + ")" : "");
+}
+
+async function sudoHosts() {
+    return new Promise((resolve, reject) => {
+        sudo.exec(process.argv.map(e => `"${e}"`).join(" "), {
+            name: "hosts etc",
+            env: {
+                SUDO_TRIED: "true"
+            }
+        }, (e, out, err) => {
+            if (e) reject(e || err);
+            else resolve(out);
+        });
+    });
 }

@@ -12,7 +12,15 @@
                 "<node_internals>/**"
             ],
             "args": [
-                "${input}"
+                // "-s",
+                // "127.7.7.7",
+                // "sherpa",
+                // "nerpa",
+                // "This is a NEW comment...",
+                "-r",
+                "127.7.7.7",
+                // "-g",
+                // "127.7.7.7",
             ],
             "type": "pwa-node",
         }
