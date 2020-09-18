@@ -25,6 +25,7 @@ async function cli() {
                 region: host[2] || "",
                 comment: host[3] || ""
             };
+            if (host.region === "_") host.region = "";
             a = set(host);
             console.log(`${a} host${(a === 1 ? "" : "s")} set.`);
         } catch (e) {
@@ -123,7 +124,7 @@ function help() {
         "",
         "    - hosts -r <query>",
         "    - hosts --remove <query>",
-        "            Removes a host from your system's hostfile. <query> in this command",
+        "            Removes hosts from your system's hostfile. <query> in this command",
         "            is identical to [query] from the --get command, in that the",
         "            following types are accepted:",
         '             - "#region"   - Will remove the entire region.',
@@ -138,8 +139,11 @@ function help() {
         "            one of the following (case-insensitive):",
         "             - csv     - Will output the data as comma separated values",
         "             - hosts   - WIll output the data as a host file",
-        "             - json    - Will output the data as JSON",
         "             - tabbed  - Will output the data as a tabbed list (DEFAULT)",
+        "             - json[x] - Will output the data as JSON. [x] is optional and",
+        "                         defines the amount of spaces to use when prettying the",
+        "                         result. 0 or ommitted means to uglify result (no spaces",
+        "                         and 1 line)",
         "",
         "    - hosts --hostFile",
         "            Prints out the location of your system's hostfile.",
