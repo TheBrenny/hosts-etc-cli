@@ -30,6 +30,7 @@
   "homepage": "https://github.com/TheBrenny/hosts-etc-cli#readme",
   "dependencies": {
     "big-kahuna": "^1.3.0",
+    "hosts-etc": "^1.0.0",
     "sudo-prompt": "^9.2.1"
   }
 }
