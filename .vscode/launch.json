@@ -17,10 +17,10 @@
                 // "sherpa",
                 // "nerpa",
                 // "This is a NEW comment...",
-                "-r",
-                "127.7.7.7",
-                // "-g",
+                // "-r",
                 // "127.7.7.7",
+                "-g",
+                "#hostman",
             ],
             "type": "pwa-node",
         }
